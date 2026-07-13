@@ -1,0 +1,40 @@
+<div class="max-w-xl mx-auto p-4 flex flex-col gap-4">
+  <h1 class="text-xl font-medium">Afazeres</h1>
+
+  <form class="flex gap-2 items-start" (ngSubmit)="addTask()">
+    <mat-form-field appearance="outline" class="flex-1">
+      <mat-label>Nova tarefa</mat-label>
+      <input matInput [(ngModel)]="newTitle" name="newTitle" />
+    </mat-form-field>
+    <button mat-icon-button color="primary" type="submit" aria-label="Adicionar tarefa">
+      <mat-icon>add_circle</mat-icon>
+    </button>
+  </form>
+
+  @if (tasksService.tasks().length === 0) {
+    <p class="text-sm text-[var(--mat-sys-on-surface-variant)]">Nenhuma tarefa por aqui. 🎉</p>
+  }
+
+  <ul
+    class="flex flex-col divide-y divide-[var(--mat-sys-outline-variant)] rounded-xl border border-[var(--mat-sys-outline-variant)] overflow-hidden"
+  >
+    @for (task of tasksService.tasks(); track task.id) {
+      <li
+        class="flex items-center gap-2 pl-3 pr-1 transition-colors hover:bg-[var(--mat-sys-surface-container-highest)]"
+      >
+        <mat-checkbox [checked]="task.done" (change)="tasksService.toggle(task)" />
+        <span
+          class="flex-1 py-2 cursor-pointer"
+          [class.line-through]="task.done"
+          [class.opacity-60]="task.done"
+          (click)="editTask(task)"
+        >
+          {{ task.title }}
+        </span>
+        <button mat-icon-button (click)="removeTask(task)" aria-label="Remover tarefa">
+          <mat-icon>delete_outline</mat-icon>
+        </button>
+      </li>
+    }
+  </ul>
+</div>

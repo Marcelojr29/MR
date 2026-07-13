@@ -1,0 +1,41 @@
+<div class="max-w-xl mx-auto p-4 flex flex-col gap-4">
+  <h1 class="text-xl font-medium">Prioridades</h1>
+
+  <form class="flex gap-2 items-start" (ngSubmit)="addPriority()">
+    <mat-form-field appearance="outline" class="flex-1">
+      <mat-label>Nova prioridade</mat-label>
+      <input matInput [(ngModel)]="newTitle" name="newTitle" />
+    </mat-form-field>
+    <button mat-icon-button color="primary" type="submit" aria-label="Adicionar prioridade">
+      <mat-icon>add_circle</mat-icon>
+    </button>
+  </form>
+
+  @if (prioritiesService.priorities().length === 0) {
+    <p class="text-sm text-[var(--mat-sys-on-surface-variant)]">Nenhuma prioridade definida.</p>
+  }
+
+  <ul
+    class="flex flex-col divide-y divide-[var(--mat-sys-outline-variant)] rounded-xl border border-[var(--mat-sys-outline-variant)] overflow-hidden"
+  >
+    @for (priority of prioritiesService.priorities(); track priority.id) {
+      <li
+        class="flex items-center gap-2 pl-3 pr-1 transition-colors hover:bg-[var(--mat-sys-surface-container-highest)]"
+      >
+        <mat-icon class="!text-[var(--mat-sys-primary)]">flag</mat-icon>
+        <mat-checkbox [checked]="priority.done" (change)="prioritiesService.toggle(priority)" />
+        <span
+          class="flex-1 py-2 cursor-pointer"
+          [class.line-through]="priority.done"
+          [class.opacity-60]="priority.done"
+          (click)="editPriority(priority)"
+        >
+          {{ priority.title }}
+        </span>
+        <button mat-icon-button (click)="removePriority(priority)" aria-label="Remover prioridade">
+          <mat-icon>delete_outline</mat-icon>
+        </button>
+      </li>
+    }
+  </ul>
+</div>

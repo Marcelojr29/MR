@@ -1,0 +1,47 @@
+<div class="max-w-xl mx-auto p-4 flex flex-col gap-4">
+  <h1 class="text-xl font-medium">Lista de compras</h1>
+
+  <form class="flex gap-2 items-start" (ngSubmit)="addItem()">
+    <mat-form-field appearance="outline" class="flex-1">
+      <mat-label>Item</mat-label>
+      <input matInput [(ngModel)]="newName" name="newName" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="w-20">
+      <mat-label>Qtd.</mat-label>
+      <input matInput type="number" min="1" [(ngModel)]="newQuantity" name="newQuantity" />
+    </mat-form-field>
+    <button mat-icon-button color="primary" type="submit" aria-label="Adicionar item">
+      <mat-icon>add_circle</mat-icon>
+    </button>
+  </form>
+
+  @if (shoppingListService.items().length === 0) {
+    <p class="text-sm text-[var(--mat-sys-on-surface-variant)]">Nenhum item na lista. 🎉</p>
+  }
+
+  <ul
+    class="flex flex-col divide-y divide-[var(--mat-sys-outline-variant)] rounded-xl border border-[var(--mat-sys-outline-variant)] overflow-hidden"
+  >
+    @for (item of shoppingListService.items(); track item.id) {
+      <li
+        class="flex items-center gap-2 pl-3 pr-1 transition-colors hover:bg-[var(--mat-sys-surface-container-highest)]"
+      >
+        <mat-checkbox [checked]="item.done" (change)="shoppingListService.toggle(item)" />
+        <span
+          class="flex-1 py-2 cursor-pointer"
+          [class.line-through]="item.done"
+          [class.opacity-60]="item.done"
+          (click)="editItem(item)"
+        >
+          {{ item.name }}
+          @if (item.quantity > 1) {
+            <span class="text-xs text-[var(--mat-sys-on-surface-variant)]">× {{ item.quantity }}</span>
+          }
+        </span>
+        <button mat-icon-button (click)="removeItem(item)" aria-label="Remover item">
+          <mat-icon>delete_outline</mat-icon>
+        </button>
+      </li>
+    }
+  </ul>
+</div>
