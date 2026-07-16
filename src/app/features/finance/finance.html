@@ -1,22 +1,43 @@
 <div class="max-w-xl mx-auto p-4 flex flex-col gap-4">
-  <h1 class="text-xl font-medium">Financeiro</h1>
-
-  <div class="grid grid-cols-3 gap-2 text-center">
-    <div class="rounded-xl border border-[var(--mat-sys-outline-variant)] p-3">
-      <p class="text-xs text-[var(--mat-sys-on-surface-variant)]">Recebido no mês</p>
-      <p class="font-mono font-semibold">{{ financeService.totalIncomeThisMonth() | currency: 'BRL' }}</p>
-    </div>
-    <div class="rounded-xl border border-[var(--mat-sys-outline-variant)] p-3">
-      <p class="text-xs text-[var(--mat-sys-on-surface-variant)]">Debitado no mês</p>
-      <p class="font-mono font-semibold">{{ financeService.totalExpenseThisMonth() | currency: 'BRL' }}</p>
-    </div>
-    <div class="rounded-xl border border-[var(--mat-sys-outline-variant)] p-3">
-      <p class="text-xs text-[var(--mat-sys-on-surface-variant)]">Saldo do mês</p>
-      <p class="font-mono font-semibold">{{ balanceThisMonth() | currency: 'BRL' }}</p>
-    </div>
+  <div class="page-header">
+    <span class="icon-badge" style="--accent: #10b981">
+      <mat-icon>payments</mat-icon>
+    </span>
+    <h1 class="text-xl font-semibold tracking-tight">Financeiro</h1>
   </div>
 
-  <form class="flex flex-col gap-2" (ngSubmit)="addTransaction()">
+  <div class="grid grid-cols-3 gap-2">
+    <mat-card class="accent-card !p-3 flex flex-col gap-2" style="--accent: #10b981">
+      <span class="icon-badge icon-badge-sm">
+        <mat-icon>trending_up</mat-icon>
+      </span>
+      <span class="text-xs text-[var(--mat-sys-on-surface-variant)]">Recebido no mês</span>
+      <span class="mono-value text-sm font-semibold">
+        {{ financeService.totalIncomeThisMonth() | currency: 'BRL' }}
+      </span>
+    </mat-card>
+    <mat-card class="accent-card !p-3 flex flex-col gap-2" style="--accent: #f43f5e">
+      <span class="icon-badge icon-badge-sm">
+        <mat-icon>trending_down</mat-icon>
+      </span>
+      <span class="text-xs text-[var(--mat-sys-on-surface-variant)]">Debitado no mês</span>
+      <span class="mono-value text-sm font-semibold">
+        {{ financeService.totalExpenseThisMonth() | currency: 'BRL' }}
+      </span>
+    </mat-card>
+    <mat-card class="accent-card !p-3 flex flex-col gap-2" style="--accent: #7c4dff">
+      <span class="icon-badge icon-badge-sm">
+        <mat-icon>account_balance_wallet</mat-icon>
+      </span>
+      <span class="text-xs text-[var(--mat-sys-on-surface-variant)]">Saldo do mês</span>
+      <span class="mono-value text-sm font-semibold">{{ balanceThisMonth() | currency: 'BRL' }}</span>
+    </mat-card>
+  </div>
+
+  <form
+    class="flex flex-col gap-2 rounded-2xl border border-[var(--mat-sys-outline-variant)] p-3"
+    (ngSubmit)="addTransaction()"
+  >
     <mat-button-toggle-group [(ngModel)]="newType" name="newType" class="self-start">
       <mat-button-toggle value="income">Recebido</mat-button-toggle>
       <mat-button-toggle value="expense">Debitado</mat-button-toggle>
@@ -41,24 +62,26 @@
   </form>
 
   @if (financeService.transactions().length === 0) {
-    <p class="text-sm text-[var(--mat-sys-on-surface-variant)]">Nenhum lançamento ainda.</p>
+    <div class="empty-state">
+      <mat-icon>payments</mat-icon>
+      <p class="text-sm">Nenhum lançamento ainda.</p>
+    </div>
   }
 
-  <ul
-    class="flex flex-col divide-y divide-[var(--mat-sys-outline-variant)] rounded-xl border border-[var(--mat-sys-outline-variant)] overflow-hidden"
-  >
+  <ul class="flex flex-col gap-2">
     @for (t of financeService.transactions(); track t.id) {
       <li
-        class="flex items-center gap-2 px-3 py-2 transition-colors hover:bg-[var(--mat-sys-surface-container-highest)]"
+        class="row-card flex items-center gap-3 px-3 py-2"
+        [style.--accent]="t.type === 'income' ? '#10b981' : '#f43f5e'"
       >
-        <mat-icon [class.text-expense]="t.type === 'expense'">
-          {{ t.type === 'income' ? 'trending_up' : 'trending_down' }}
-        </mat-icon>
+        <span class="icon-badge icon-badge-sm">
+          <mat-icon>{{ t.type === 'income' ? 'trending_up' : 'trending_down' }}</mat-icon>
+        </span>
         <div class="flex-1 cursor-pointer" (click)="editTransaction(t)">
           <p>{{ t.description }}</p>
           <p class="text-xs text-[var(--mat-sys-on-surface-variant)]">{{ t.date | date: 'dd/MM/yyyy' }}</p>
         </div>
-        <span class="font-mono font-medium">
+        <span class="mono-value font-medium">
           {{ t.type === 'expense' ? '-' : '+' }}{{ t.amount | currency: 'BRL' }}
         </span>
         <button mat-icon-button (click)="removeTransaction(t)" aria-label="Remover lançamento">

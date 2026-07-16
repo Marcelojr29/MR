@@ -10,6 +10,7 @@ import { ShoppingItem } from '../../shared/models/shopping-item.model';
 export interface ShoppingItemEditResult {
   name: string;
   quantity: number;
+  price: number | null;
 }
 
 @Component({
@@ -22,10 +23,17 @@ export interface ShoppingItemEditResult {
         <mat-label>Item</mat-label>
         <input matInput [(ngModel)]="name" name="name" />
       </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>Quantidade</mat-label>
-        <input matInput type="number" min="1" [(ngModel)]="quantity" name="quantity" />
-      </mat-form-field>
+      <div class="flex gap-2">
+        <mat-form-field appearance="outline" class="flex-1">
+          <mat-label>Quantidade</mat-label>
+          <input matInput type="number" min="1" [(ngModel)]="quantity" name="quantity" />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="flex-1">
+          <mat-label>Valor un.</mat-label>
+          <span matTextPrefix>R$&nbsp;</span>
+          <input matInput type="number" min="0" step="0.01" [(ngModel)]="price" name="price" />
+        </mat-form-field>
+      </div>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
       <button mat-button (click)="dialogRef.close()">Cancelar</button>
@@ -41,11 +49,17 @@ export class ShoppingItemEditDialog {
 
   protected readonly name = signal(this.data.name);
   protected readonly quantity = signal(this.data.quantity);
+  protected readonly price = signal<number | null>(this.data.price);
 
   save() {
     const name = this.name().trim();
     if (!name) return;
     const quantity = this.quantity() > 0 ? this.quantity() : 1;
-    this.dialogRef.close({ name, quantity } satisfies ShoppingItemEditResult);
+    const price = this.price();
+    this.dialogRef.close({
+      name,
+      quantity,
+      price: price && price > 0 ? price : null,
+    } satisfies ShoppingItemEditResult);
   }
 }

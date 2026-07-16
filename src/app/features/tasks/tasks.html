@@ -1,7 +1,15 @@
 <div class="max-w-xl mx-auto p-4 flex flex-col gap-4">
-  <h1 class="text-xl font-medium">Afazeres</h1>
+  <div class="page-header">
+    <span class="icon-badge" style="--accent: #7c4dff">
+      <mat-icon>checklist</mat-icon>
+    </span>
+    <h1 class="text-xl font-semibold tracking-tight">Afazeres</h1>
+  </div>
 
-  <form class="flex gap-2 items-start" (ngSubmit)="addTask()">
+  <form
+    class="flex gap-2 items-start rounded-2xl border border-[var(--mat-sys-outline-variant)] p-3"
+    (ngSubmit)="addTask()"
+  >
     <mat-form-field appearance="outline" class="flex-1">
       <mat-label>Nova tarefa</mat-label>
       <input matInput [(ngModel)]="newTitle" name="newTitle" />
@@ -12,16 +20,15 @@
   </form>
 
   @if (tasksService.tasks().length === 0) {
-    <p class="text-sm text-[var(--mat-sys-on-surface-variant)]">Nenhuma tarefa por aqui. 🎉</p>
+    <div class="empty-state">
+      <mat-icon>checklist</mat-icon>
+      <p class="text-sm">Nenhuma tarefa por aqui. Adicione a primeira acima. 🎉</p>
+    </div>
   }
 
-  <ul
-    class="flex flex-col divide-y divide-[var(--mat-sys-outline-variant)] rounded-xl border border-[var(--mat-sys-outline-variant)] overflow-hidden"
-  >
+  <ul class="flex flex-col gap-2">
     @for (task of tasksService.tasks(); track task.id) {
-      <li
-        class="flex items-center gap-2 pl-3 pr-1 transition-colors hover:bg-[var(--mat-sys-surface-container-highest)]"
-      >
+      <li class="row-card flex items-center gap-2 pl-3 pr-1" style="--accent: #7c4dff">
         <mat-checkbox [checked]="task.done" (change)="tasksService.toggle(task)" />
         <span
           class="flex-1 py-2 cursor-pointer"

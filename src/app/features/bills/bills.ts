@@ -10,13 +10,10 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { firstValueFrom } from 'rxjs';
 
 import { ConfirmService } from '../../shared/confirm.service';
+import { todayIso } from '../../shared/date';
 import { Bill } from '../../shared/models/bill.model';
 import { BillEditDialog, BillEditResult } from './bill-edit-dialog';
 import { BillsService } from './bills.service';
-
-function todayIso(): string {
-  return new Date().toISOString().slice(0, 10);
-}
 
 @Component({
   selector: 'app-bills',

@@ -1,7 +1,15 @@
 <div class="max-w-xl mx-auto p-4 flex flex-col gap-4">
-  <h1 class="text-xl font-medium">Contas</h1>
+  <div class="page-header">
+    <span class="icon-badge" style="--accent: #f59e0b">
+      <mat-icon>receipt_long</mat-icon>
+    </span>
+    <h1 class="text-xl font-semibold tracking-tight">Contas</h1>
+  </div>
 
-  <form class="flex flex-col gap-2" (ngSubmit)="addBill()">
+  <form
+    class="flex flex-col gap-2 rounded-2xl border border-[var(--mat-sys-outline-variant)] p-3"
+    (ngSubmit)="addBill()"
+  >
     <mat-form-field appearance="outline">
       <mat-label>Descrição</mat-label>
       <input matInput [(ngModel)]="newTitle" name="newTitle" />
@@ -24,19 +32,23 @@
     <mat-tab label="A pagar ({{ billsService.pending().length }})">
       <div class="flex flex-col gap-2 pt-3">
         @if (billsService.pending().length === 0) {
-          <p class="text-sm text-[var(--mat-sys-on-surface-variant)]">Nenhuma conta pendente. 🎉</p>
+          <div class="empty-state">
+            <mat-icon>task_alt</mat-icon>
+            <p class="text-sm">Nenhuma conta pendente. 🎉</p>
+          </div>
         }
         @for (bill of billsService.pending(); track bill.id) {
-          <div
-            class="flex items-center gap-2 rounded-xl border border-[var(--mat-sys-outline-variant)] px-3 py-2 transition-colors hover:bg-[var(--mat-sys-surface-container-highest)]"
-          >
+          <div class="row-card flex items-center gap-3 px-3 py-2" style="--accent: #f59e0b">
+            <span class="icon-badge icon-badge-sm">
+              <mat-icon>receipt_long</mat-icon>
+            </span>
             <div class="flex-1 cursor-pointer" (click)="editBill(bill)">
               <p>{{ bill.title }}</p>
               <p class="text-xs text-[var(--mat-sys-on-surface-variant)]">
                 Vence em {{ bill.dueDate | date: 'dd/MM/yyyy' }}
               </p>
             </div>
-            <span class="font-mono font-medium">{{ bill.amount | currency: 'BRL' }}</span>
+            <span class="mono-value font-medium">{{ bill.amount | currency: 'BRL' }}</span>
             <button mat-icon-button color="primary" (click)="billsService.markPaid(bill)" aria-label="Marcar como paga">
               <mat-icon>task_alt</mat-icon>
             </button>
@@ -51,19 +63,23 @@
     <mat-tab label="Pagas ({{ billsService.paid().length }})">
       <div class="flex flex-col gap-2 pt-3">
         @if (billsService.paid().length === 0) {
-          <p class="text-sm text-[var(--mat-sys-on-surface-variant)]">Nenhuma conta paga ainda.</p>
+          <div class="empty-state">
+            <mat-icon>receipt_long</mat-icon>
+            <p class="text-sm">Nenhuma conta paga ainda.</p>
+          </div>
         }
         @for (bill of billsService.paid(); track bill.id) {
-          <div
-            class="flex items-center gap-2 rounded-xl border border-[var(--mat-sys-outline-variant)] px-3 py-2 opacity-70"
-          >
+          <div class="row-card flex items-center gap-3 px-3 py-2 opacity-80" style="--accent: #10b981">
+            <span class="icon-badge icon-badge-sm">
+              <mat-icon>task_alt</mat-icon>
+            </span>
             <div class="flex-1 cursor-pointer" (click)="editBill(bill)">
               <p>{{ bill.title }}</p>
               <p class="text-xs text-[var(--mat-sys-on-surface-variant)]">
                 Paga em {{ bill.paidAt | date: 'dd/MM/yyyy' }}
               </p>
             </div>
-            <span class="font-mono font-medium">{{ bill.amount | currency: 'BRL' }}</span>
+            <span class="mono-value font-medium">{{ bill.amount | currency: 'BRL' }}</span>
             <button mat-icon-button (click)="billsService.markPending(bill)" aria-label="Marcar como pendente">
               <mat-icon>undo</mat-icon>
             </button>

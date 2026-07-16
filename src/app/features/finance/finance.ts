@@ -3,6 +3,7 @@ import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,13 +11,10 @@ import { MatInputModule } from '@angular/material/input';
 import { firstValueFrom } from 'rxjs';
 
 import { ConfirmService } from '../../shared/confirm.service';
+import { todayIso } from '../../shared/date';
 import { Transaction, TransactionType } from '../../shared/models/transaction.model';
 import { FinanceService } from './finance.service';
 import { TransactionEditDialog, TransactionEditResult } from './transaction-edit-dialog';
-
-function todayIso(): string {
-  return new Date().toISOString().slice(0, 10);
-}
 
 @Component({
   selector: 'app-finance',
@@ -26,6 +24,7 @@ function todayIso(): string {
     FormsModule,
     MatButtonModule,
     MatButtonToggleModule,
+    MatCardModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,

@@ -1,7 +1,42 @@
 <div class="max-w-xl mx-auto p-4 flex flex-col gap-4">
-  <h1 class="text-xl font-medium">Lista de compras</h1>
+  <div class="flex flex-col gap-3">
+    <div class="page-header">
+      <span class="icon-badge" style="--accent: #22d3ee">
+        <mat-icon>shopping_cart</mat-icon>
+      </span>
+      <h1 class="text-xl font-semibold tracking-tight">Lista de compras</h1>
+    </div>
+    @if (!shoppingMode()) {
+      <button mat-stroked-button class="self-start" (click)="toggleShoppingMode()">
+        <mat-icon>storefront</mat-icon>
+        Fazer compras
+      </button>
+    }
+  </div>
 
-  <form class="flex gap-2 items-start" (ngSubmit)="addItem()">
+  @if (shoppingMode()) {
+    <div
+      class="accent-card !p-3 flex items-center gap-3"
+      style="--accent: #10b981"
+    >
+      <span class="icon-badge icon-badge-sm">
+        <mat-icon>storefront</mat-icon>
+      </span>
+      <div class="flex-1">
+        <p class="text-xs text-[var(--mat-sys-on-surface-variant)]">Total marcado</p>
+        <p class="mono-value font-semibold">
+          {{ shoppingListService.purchasedTotal() | currency: 'BRL' }}
+        </p>
+      </div>
+      <button mat-button (click)="toggleShoppingMode()">Cancelar</button>
+      <button mat-flat-button color="primary" (click)="finalizePurchase()">Finalizar compras</button>
+    </div>
+  }
+
+  <form
+    class="flex gap-2 items-start rounded-2xl border border-[var(--mat-sys-outline-variant)] p-3"
+    (ngSubmit)="addItem()"
+  >
     <mat-form-field appearance="outline" class="flex-1">
       <mat-label>Item</mat-label>
       <input matInput [(ngModel)]="newName" name="newName" />
@@ -10,22 +45,28 @@
       <mat-label>Qtd.</mat-label>
       <input matInput type="number" min="1" [(ngModel)]="newQuantity" name="newQuantity" />
     </mat-form-field>
+    @if (shoppingMode()) {
+      <mat-form-field appearance="outline" class="w-28">
+        <mat-label>Valor un.</mat-label>
+        <span matTextPrefix>R$&nbsp;</span>
+        <input matInput type="number" min="0" step="0.01" [(ngModel)]="newPrice" name="newPrice" />
+      </mat-form-field>
+    }
     <button mat-icon-button color="primary" type="submit" aria-label="Adicionar item">
       <mat-icon>add_circle</mat-icon>
     </button>
   </form>
 
   @if (shoppingListService.items().length === 0) {
-    <p class="text-sm text-[var(--mat-sys-on-surface-variant)]">Nenhum item na lista. 🎉</p>
+    <div class="empty-state">
+      <mat-icon>shopping_cart</mat-icon>
+      <p class="text-sm">Nenhum item na lista. Adicione o primeiro acima. 🎉</p>
+    </div>
   }
 
-  <ul
-    class="flex flex-col divide-y divide-[var(--mat-sys-outline-variant)] rounded-xl border border-[var(--mat-sys-outline-variant)] overflow-hidden"
-  >
+  <ul class="flex flex-col gap-2">
     @for (item of shoppingListService.items(); track item.id) {
-      <li
-        class="flex items-center gap-2 pl-3 pr-1 transition-colors hover:bg-[var(--mat-sys-surface-container-highest)]"
-      >
+      <li class="row-card flex items-center gap-2 pl-3 pr-1" style="--accent: #22d3ee">
         <mat-checkbox [checked]="item.done" (change)="shoppingListService.toggle(item)" />
         <span
           class="flex-1 py-2 cursor-pointer"
@@ -34,10 +75,23 @@
           (click)="editItem(item)"
         >
           {{ item.name }}
-          @if (item.quantity > 1) {
-            <span class="text-xs text-[var(--mat-sys-on-surface-variant)]">× {{ item.quantity }}</span>
-          }
         </span>
+        @if (item.quantity > 1) {
+          <span
+            class="mono-value text-xs font-medium rounded-full px-2 py-0.5"
+            style="background-color: color-mix(in srgb, #22d3ee 18%, transparent); color: #22d3ee"
+          >
+            × {{ item.quantity }}
+          </span>
+        }
+        @if (item.price) {
+          <span
+            class="mono-value text-xs font-medium rounded-full px-2 py-0.5"
+            style="background-color: color-mix(in srgb, #10b981 18%, transparent); color: #10b981"
+          >
+            {{ item.price * item.quantity | currency: 'BRL' }}
+          </span>
+        }
         <button mat-icon-button (click)="removeItem(item)" aria-label="Remover item">
           <mat-icon>delete_outline</mat-icon>
         </button>
